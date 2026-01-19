@@ -3,169 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Pro | Web IDE</title>
+    <title>Pro Studio | Multi-File IDE</title>
     <style>
         :root {
-            --bg-main: #0d1117;
-            --bg-editor: #161b22;
+            --bg-darker: #090b10;
+            --bg-sidebar: #161b22;
+            --bg-editor: #0d1117;
             --accent: #58a6ff;
             --border: #30363d;
             --text: #c9d1d9;
-            --err: #f85149;
-            --success: #3fb950;
+            --hover: #21262d;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg-main); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-darker); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Navigation Bar */
-        nav { height: 48px; background: #010409; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid var(--border); justify-content: space-between; }
-        .brand { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .brand span { background: var(--accent); color: black; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+        /* Header */
+        header { height: 35px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 15px; font-size: 12px; justify-content: space-between; }
+
+        /* Layout */
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 220px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 10px 15px; font-size: 11px; font-weight: bold; color: #8b949e; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .add-file-btn { cursor: pointer; color: var(--accent); font-size: 18px; line-height: 0; }
         
-        .status-bar { display: flex; gap: 15px; font-size: 12px; }
-        .status-item { display: flex; align-items: center; gap: 5px; }
-        .indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
-        .indicator.error { background: var(--err); box-shadow: 0 0 8px var(--err); }
+        .file-list { flex: 1; overflow-y: auto; }
+        .file-item { padding: 8px 20px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; border-left: 2px solid transparent; }
+        .file-item:hover { background: var(--hover); }
+        .file-item.active { background: #21262d; border-left-color: var(--accent); color: white; }
 
-        /* Layout Workspace */
-        .workspace { display: flex; flex: 1; overflow: hidden; }
+        /* Editor Area */
+        .editor-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-editor); }
+        .tabs { height: 35px; background: var(--bg-darker); display: flex; overflow-x: auto; border-bottom: 1px solid var(--border); }
+        .tab { padding: 0 15px; display: flex; align-items: center; font-size: 12px; border-right: 1px solid var(--border); background: var(--bg-sidebar); cursor: pointer; color: #8b949e; }
+        .tab.active { background: var(--bg-editor); color: white; }
 
-        /* Editor Section */
-        .editor-container { width: 50%; display: flex; flex-direction: column; background: var(--bg-editor); border-right: 1px solid var(--border); }
-        .tab-bar { display: flex; background: #010409; border-bottom: 1px solid var(--border); }
-        .tab { padding: 10px 20px; font-size: 12px; cursor: pointer; border-right: 1px solid var(--border); background: #0d1117; color: #8b949e; transition: 0.2s; }
-        .tab.active { background: var(--bg-editor); color: var(--accent); border-bottom: 2px solid var(--accent); }
+        textarea { flex: 1; background: transparent; color: #d4d4d4; border: none; padding: 20px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; resize: none; }
 
-        textarea { flex: 1; background: transparent; color: #d4d4d4; border: none; padding: 20px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 14px; outline: none; resize: none; line-height: 1.6; }
+        /* Preview Area */
+        .preview-area { width: 40%; background: white; border-left: 4px solid var(--border); }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        /* Preview Section */
-        .preview-container { width: 50%; display: flex; flex-direction: column; background: white; }
-        iframe { flex: 1; border: none; background: white; }
-
-        /* Professional Console */
-        .console { height: 180px; background: #010409; border-top: 1px solid var(--border); display: flex; flex-direction: column; }
-        .console-header { padding: 6px 15px; background: #0d1117; font-size: 11px; font-weight: bold; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
-        #console-output { flex: 1; overflow-y: auto; padding: 10px; font-family: monospace; font-size: 12px; line-height: 1.5; }
-        .log-entry { margin-bottom: 4px; border-bottom: 1px solid #161b22; padding-bottom: 2px; }
-        .log-time { color: #484f58; margin-right: 8px; }
-        .log-error { color: var(--err); }
-        .log-info { color: var(--accent); }
+        /* Modal */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-sidebar); padding: 20px; border: 1px solid var(--border); border-radius: 8px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal input { background: var(--bg-darker); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 4px; outline: none; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="brand">STUDIO_PRO <span>CORE v1.0</span></div>
-        <div class="status-bar">
-            <div class="status-item"><div id="status-light" class="indicator"></div> <span id="status-text">System Ready</span></div>
+    <header>
+        <div>Studio Project Explorer</div>
+        <div id="status">● All Files Synced</div>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                EXPLORER
+                <span class="add-file-btn" onclick="openModal()" title="New File">+</span>
+            </div>
+            <div id="file-list" class="file-list"></div>
         </div>
-    </nav>
 
-    <div class="workspace">
-        <section class="editor-container">
-            <div class="tab-bar">
-                <div class="tab active">index.html / main.css / script.js</div>
-            </div>
-            <textarea id="main-editor" spellcheck="false" placeholder="Enter your full code here..."><div class="card">
-  <h1>Professional Editor</h1>
-  <p id="msg">Current status: Active</p>
-  <button onclick="greet()">Click Me</button>
-</div>
+        <div class="editor-area">
+            <div id="tabs" class="tabs"></div>
+            <textarea id="code-editor" spellcheck="false"></textarea>
+        </div>
 
-<style>
-  body { background: #f0f2f5; display: grid; place-items: center; height: 100vh; font-family: sans-serif; }
-  .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-  button { margin-top: 15px; padding: 10px 20px; cursor: pointer; background: #58a6ff; border: none; color: white; border-radius: 6px; }
-</style>
+        <div class="preview-area">
+            <iframe id="preview"></iframe>
+        </div>
+    </div>
 
-<script>
-  function greet() {
-    const msg = document.getElementById('msg');
-    msg.innerText = "Button clicked! Check the console below.";
-    console.log("Action performed at: " + new Date().toLocaleTimeString());
-  }
-</script></textarea>
-        </section>
-
-        <section class="preview-container">
-            <iframe id="preview-frame"></iframe>
-            <div class="console">
-                <div class="console-header">
-                    <span>TERMINAL / OUTPUT</span>
-                    <span style="cursor:pointer; color: var(--accent)" onclick="clearConsole()">Clear</span>
-                </div>
-                <div id="console-output"></div>
-            </div>
-        </section>
+    <div id="modal" class="modal">
+        <p style="margin-bottom: 10px; font-size: 13px;">File Name (e.g. style.css):</p>
+        <input type="text" id="filename-input" placeholder="index.html">
+        <button onclick="addFile()" style="margin-left: 10px; cursor: pointer;">Add</button>
     </div>
 
     <script>
-        const editor = document.getElementById('main-editor');
-        const preview = document.getElementById('preview-frame');
-        const consoleOutput = document.getElementById('console-output');
-        const statusLight = document.getElementById('status-light');
-        const statusText = document.getElementById('status-text');
+        // --- VIRTUAL FILE SYSTEM ---
+        let files = {
+            'index.html': '<h1>Home</h1>\n<p>Welcome to the multi-file IDE.</p>\n<button onclick="run()">Test JS</button>',
+            'style.css': 'body { background: #121212; color: white; font-family: sans-serif; padding: 50px; text-align: center; }\nbutton { padding: 10px; background: dodgerblue; border: none; color: white; border-radius: 5px; cursor: pointer; }',
+            'main.js': 'function run() {\n  console.log("Script working!");\n  alert("Logic connected!");\n}'
+        };
 
-        function appendLog(message, type = 'info') {
-            const time = new Date().toLocaleTimeString([], { hour12: false });
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type === 'error' ? 'log-error' : 'log-info'}`;
-            entry.innerHTML = `<span class="log-time">[${time}]</span> ${message}`;
-            consoleOutput.appendChild(entry);
-            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        let activeFile = 'index.html';
+
+        const fileListEl = document.getElementById('file-list');
+        const editorEl = document.getElementById('code-editor');
+        const previewEl = document.getElementById('preview');
+        const tabsEl = document.getElementById('tabs');
+        const modal = document.getElementById('modal');
+
+        // --- CORE FUNCTIONS ---
+
+        function renderSidebar() {
+            fileListEl.innerHTML = '';
+            Object.keys(files).forEach(filename => {
+                const div = document.createElement('div');
+                div.className = `file-item ${filename === activeFile ? 'active' : ''}`;
+                div.innerHTML = `📄 ${filename}`;
+                div.onclick = () => switchFile(filename);
+                fileListEl.appendChild(div);
+            });
         }
 
-        function clearConsole() {
-            consoleOutput.innerHTML = '';
-            appendLog('Console cleared.');
+        function switchFile(filename) {
+            // Save current work before switching
+            files[activeFile] = editorEl.value;
+            
+            activeFile = filename;
+            editorEl.value = files[activeFile];
+            renderSidebar();
+            updatePreview();
         }
 
-        function update() {
-            try {
-                const code = editor.value;
-                
-                // Injection script to proxy errors and logs to the custom terminal
-                const proxyScript = `
-                    <script>
-                        window.onerror = function(msg, url, line) {
-                            window.parent.postMessage({type: 'error', data: msg + " (Line: " + line + ")"}, '*');
-                        };
-                        const originalLog = console.log;
-                        console.log = function(...args) {
-                            window.parent.postMessage({type: 'log', data: args.join(' ')}, '*');
-                            originalLog.apply(console, args);
-                        };
-                    <\/script>
-                `;
+        function openModal() { modal.style.display = 'block'; document.getElementById('filename-input').focus(); }
 
-                const blob = new Blob([proxyScript + code], { type: 'text/html' });
-                preview.src = URL.createObjectURL(blob);
-                
-                // Reset status on valid update
-                statusLight.classList.remove('error');
-                statusText.innerText = "System Ready";
-            } catch (err) {
-                appendLog(err.message, 'error');
+        function addFile() {
+            const input = document.getElementById('filename-input');
+            if (input.value && !files[input.value]) {
+                files[input.value] = '';
+                switchFile(input.value);
+                input.value = '';
+                modal.style.display = 'none';
             }
         }
 
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'error') {
-                appendLog(event.data.data, 'error');
-                statusLight.classList.add('error');
-                statusText.innerText = "Error Detected";
-            } else if (event.data.type === 'log') {
-                appendLog(event.data.data, 'info');
-            }
+        function updatePreview() {
+            // Save current typing state
+            files[activeFile] = editorEl.value;
+
+            // Compilation Logic:
+            // 1. Get HTML from index.html
+            // 2. Wrap all .css files in <style>
+            // 3. Wrap all .js files in <script>
+            
+            let html = files['index.html'] || '';
+            let css = '';
+            let js = '';
+
+            Object.keys(files).forEach(name => {
+                if (name.endsWith('.css')) css += `<style>/* ${name} */\n${files[name]}</style>\n`;
+                if (name.endsWith('.js')) js += `<script>\n${files[name]}<\/script>\n`;
+            });
+
+            const combined = `
+                <!DOCTYPE html>
+                <html>
+                <head>${css}</head>
+                <body>
+                    ${html}
+                    ${js}
+                </body>
+                </html>
+            `;
+            
+            previewEl.srcdoc = combined;
+        }
+
+        // --- INITIALIZATION ---
+        editorEl.value = files[activeFile];
+        editorEl.addEventListener('input', updatePreview);
+        renderSidebar();
+        updatePreview();
+
+        // Close modal on Enter
+        document.getElementById('filename-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addFile();
         });
-
-        // Real-time listener
-        editor.addEventListener('input', update);
-        
-        // Initial run
-        update();
-        appendLog("Studio Pro Initialized. Listening for changes...");
     </script>
 </body>
 </html>
