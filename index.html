@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Pro | IDE</title>
+    <title>Studio Pro IDE</title>
     <style>
         :root {
             --bg-dark: #0d1117;
@@ -11,115 +11,133 @@
             --accent: #58a6ff;
             --border: #30363d;
             --text: #c9d1d9;
-            --hover: #21262d;
+            --error: #f85149;
+            --success: #3fb950;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg-dark); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Navigation */
+        /* Navigation & Status */
         nav { height: 40px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 15px; justify-content: space-between; font-size: 12px; }
-        .logo { color: var(--accent); font-weight: bold; }
+        .status-pill { display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 10px; border-radius: 12px; background: #21262d; }
+        .indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+        .indicator.has-error { background: var(--error); box-shadow: 0 0 8px var(--error); }
 
-        /* Main Layout */
+        /* Main Workspace */
         .main { display: flex; flex: 1; overflow: hidden; }
 
-        /* Sidebar */
-        .sidebar { width: 200px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sidebar-header { padding: 10px; font-size: 11px; color: #8b949e; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        .add-btn { cursor: pointer; color: var(--accent); font-size: 16px; }
-
-        .file-item { padding: 8px 15px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .file-item:hover { background: var(--hover); }
-        .file-item.active { background: #21262d; border-left: 2px solid var(--accent); color: white; }
-
-        /* Editor */
-        .editor-box { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
-        .tab-name { padding: 5px 15px; font-size: 12px; background: var(--bg-dark); border-bottom: 1px solid var(--border); color: var(--accent); }
-        textarea { flex: 1; background: transparent; color: #d4d4d4; border: none; padding: 20px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; resize: none; line-height: 1.5; }
-
-        /* Preview */
-        .preview-box { width: 45%; background: white; border-left: 4px solid var(--border); display: flex; flex-direction: column; }
-        iframe { flex: 1; border: none; background: white; }
+        /* Sidebar File Explorer */
+        .sidebar { width: 220px; background: var(--bg-sidebar); border-right: 1px solid var(--border); }
+        .sidebar-header { padding: 12px; font-size: 11px; color: #8b949e; display: flex; justify-content: space-between; font-weight: bold; letter-spacing: 1px; }
         
+        .file-item { padding: 8px 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; group; transition: 0.2s; }
+        .file-item:hover { background: #21262d; }
+        .file-item.active { background: #21262d; color: var(--accent); border-left: 2px solid var(--accent); }
+        .delete-btn { color: #484f58; font-size: 14px; opacity: 0; transition: 0.2s; padding: 0 5px; }
+        .file-item:hover .delete-btn { opacity: 1; }
+        .delete-btn:hover { color: var(--error); }
+
+        /* Editor Section */
+        .editor-container { flex: 1; display: flex; flex-direction: column; }
+        .editor-tab { padding: 8px 20px; background: var(--bg-dark); font-size: 12px; border-bottom: 1px solid var(--border); color: var(--accent); }
+        textarea { flex: 1; background: transparent; color: #d4d4d4; border: none; padding: 20px; font-family: 'Fira Code', 'Consolas', monospace; font-size: 14px; outline: none; resize: none; line-height: 1.6; }
+
+        /* Preview Window */
+        .preview-pane { width: 45%; background: white; border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+        iframe { flex: 1; border: none; }
+        .error-console { height: 100px; background: #111; color: var(--error); font-family: monospace; font-size: 12px; padding: 10px; overflow-y: auto; border-top: 2px solid var(--error); display: none; }
+
         /* Modal */
-        #modal { display: none; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-sidebar); padding: 20px; border: 1px solid var(--border); border-radius: 8px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        #modal input { background: #0d1117; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 4px; outline: none; width: 180px; }
-        #modal button { background: var(--accent); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+        #modal { display: none; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-sidebar); padding: 20px; border: 1px solid var(--border); border-radius: 8px; z-index: 100; }
+        #modal input { background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 4px; outline: none; }
+        .btn { padding: 8px 15px; border-radius: 4px; cursor: pointer; border: none; font-size: 12px; }
+        .btn-primary { background: var(--accent); color: white; }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo">STUDIO_PRO</div>
-        <div id="status">Syncing to LocalStorage...</div>
+        <div style="font-weight: bold; letter-spacing: 1px;">STUDIO<span style="color:var(--accent)">PRO</span></div>
+        <div class="status-pill">
+            <div id="status-dot" class="indicator"></div>
+            <span id="status-msg">System Healthy</span>
+        </div>
     </nav>
 
     <div class="main">
         <aside class="sidebar">
-            <div class="sidebar-header">EXPLORER <span class="add-btn" onclick="showModal()">+</span></div>
+            <div class="sidebar-header">EXPLORER <span onclick="showModal()" style="cursor:pointer; color:var(--accent)">+ New</span></div>
             <div id="file-list"></div>
         </aside>
 
-        <section class="editor-box">
-            <div id="current-tab" class="tab-name">index.html</div>
+        <section class="editor-container">
+            <div id="active-tab-title" class="editor-tab">index.html</div>
             <textarea id="editor" spellcheck="false"></textarea>
         </section>
 
-        <section class="preview-box">
-            <iframe id="viewer"></iframe>
+        <section class="preview-pane">
+            <iframe id="preview"></iframe>
+            <div id="error-logs" class="error-console"></div>
         </section>
     </div>
 
     <div id="modal">
-        <input type="text" id="new-filename" placeholder="script.js">
-        <button onclick="createFile()">Create</button>
+        <input type="text" id="new-filename" placeholder="style.css">
+        <button class="btn btn-primary" onclick="createFile()">Add File</button>
     </div>
 
     <script>
         const editor = document.getElementById('editor');
-        const viewer = document.getElementById('viewer');
+        const preview = document.getElementById('preview');
         const fileList = document.getElementById('file-list');
-        const tabName = document.getElementById('current-tab');
-        const modal = document.getElementById('modal');
+        const errorLogs = document.getElementById('error-logs');
+        const statusDot = document.getElementById('status-dot');
+        const statusMsg = document.getElementById('status-msg');
 
-        // Initialize Virtual File System
+        // File System
         let vfs = JSON.parse(localStorage.getItem('studio_vfs')) || {
-            'index.html': '<!DOCTYPE html>\n<html>\n<head>\n  <title>New Project</title>\n</head>\n<body>\n  <h1>Hello World</h1>\n</body>\n</html>'
+            'index.html': '<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n  <h1>Hello World</h1>\n  <script src="script.js"><\/script>\n</body>\n</html>'
         };
         let activeFile = 'index.html';
-
-        function saveToStorage() {
-            localStorage.setItem('studio_vfs', JSON.stringify(vfs));
-        }
 
         function renderSidebar() {
             fileList.innerHTML = '';
             Object.keys(vfs).forEach(name => {
                 const div = document.createElement('div');
                 div.className = `file-item ${name === activeFile ? 'active' : ''}`;
-                div.innerHTML = `📄 ${name}`;
-                div.onclick = () => switchFile(name);
+                div.innerHTML = `
+                    <span onclick="switchFile('${name}')">📄 ${name}</span>
+                    ${name !== 'index.html' ? `<span class="delete-btn" onclick="deleteFile('${name}')">×</span>` : ''}
+                `;
                 fileList.appendChild(div);
             });
         }
 
         function switchFile(name) {
-            vfs[activeFile] = editor.value; // Save current typing
+            vfs[activeFile] = editor.value;
             activeFile = name;
-            tabName.innerText = name;
+            document.getElementById('active-tab-title').innerText = name;
             editor.value = vfs[name];
             renderSidebar();
             updatePreview();
         }
 
-        function showModal() { modal.style.display = 'block'; document.getElementById('new-filename').focus(); }
+        function deleteFile(name) {
+            if (confirm(`Delete ${name}?`)) {
+                delete vfs[name];
+                if (activeFile === name) activeFile = 'index.html';
+                switchFile(activeFile);
+            }
+        }
+
+        function showModal() { document.getElementById('modal').style.display = 'block'; document.getElementById('new-filename').focus(); }
 
         function createFile() {
             const name = document.getElementById('new-filename').value;
             if (name && !vfs[name]) {
                 vfs[name] = '';
-                modal.style.display = 'none';
+                document.getElementById('modal').style.display = 'none';
                 document.getElementById('new-filename').value = '';
                 switchFile(name);
             }
@@ -127,39 +145,53 @@
 
         function updatePreview() {
             vfs[activeFile] = editor.value;
-            saveToStorage();
+            localStorage.setItem('studio_vfs', JSON.stringify(vfs));
+            
+            // Clear errors
+            errorLogs.style.display = 'none';
+            errorLogs.innerHTML = '';
+            statusDot.classList.remove('has-error');
+            statusMsg.innerText = "System Healthy";
 
-            let doc = vfs['index.html'] || '';
-            let cssBundle = '';
-            let jsBundle = '';
+            let html = vfs['index.html'] || '';
+            let styles = '';
+            let scripts = '';
 
-            // Bundle all CSS and JS files into the preview
-            Object.keys(vfs).forEach(name => {
-                if (name.endsWith('.css')) cssBundle += `\n/* ${name} */\n${vfs[name]}`;
-                if (name.endsWith('.js')) jsBundle += `\n// ${name}\n${vfs[name]}`;
+            Object.keys(vfs).forEach(file => {
+                if (file.endsWith('.css')) styles += `<style>/*${file}*/\n${vfs[file]}</style>`;
+                if (file.endsWith('.js')) scripts += `<script>try {\n${vfs[file]}\n} catch(e) { window.parent.postMessage({error: e.message, file: '${file}'}, '*'); }<\/script>`;
             });
 
-            // Inject styles before </head> and scripts before </body>
-            let rendered = doc;
-            if (cssBundle) rendered = rendered.replace('</head>', `<style>${cssBundle}</style></head>`);
-            if (jsBundle) rendered = rendered.replace('</body>', `<script>${jsBundle}<\/script></body>`);
+            // The Error Detector Wrapper
+            const errorTracker = `
+                <script>
+                    window.onerror = function(msg, url, line) {
+                        window.parent.postMessage({error: msg, line: line}, '*');
+                    };
+                <\/script>
+            `;
 
-            // Fallback if tags are missing
-            if (!rendered.includes('<style>') && cssBundle) rendered += `<style>${cssBundle}</style>`;
-            if (!rendered.includes('<script>') && jsBundle) rendered += `<script>${jsBundle}<\/script>`;
-
-            viewer.srcdoc = rendered;
+            const combined = errorTracker + styles + html + scripts;
+            preview.srcdoc = combined;
         }
 
+        // Listen for errors from the iframe
+        window.addEventListener('message', (e) => {
+            if (e.data.error) {
+                errorLogs.style.display = 'block';
+                errorLogs.innerHTML = `<strong>Error:</strong> ${e.data.error}`;
+                statusDot.classList.add('has-error');
+                statusMsg.innerText = "Error Detected";
+            }
+        });
+
         editor.addEventListener('input', updatePreview);
-        
-        // Initial setup
+        window.onclick = (e) => { if(e.target == document.getElementById('modal')) modal.style.display='none'; }
+
+        // Boot IDE
         editor.value = vfs[activeFile];
         renderSidebar();
         updatePreview();
-
-        // Close modal on click outside
-        window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; }
     </script>
 </body>
 </html>
