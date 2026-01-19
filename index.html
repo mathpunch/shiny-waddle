@@ -2,102 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Pro IDE</title>
+    <title>Studio Pro IDE | Fixed Error Engine</title>
     <style>
         :root {
-            --bg-dark: #0d1117;
-            --bg-sidebar: #161b22;
+            --bg: #0d1117;
+            --sidebar: #161b22;
             --accent: #58a6ff;
             --border: #30363d;
             --text: #c9d1d9;
             --error: #f85149;
-            --success: #3fb950;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Navigation & Status */
-        nav { height: 40px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 15px; justify-content: space-between; font-size: 12px; }
-        .status-pill { display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 10px; border-radius: 12px; background: #21262d; }
-        .indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
-        .indicator.has-error { background: var(--error); box-shadow: 0 0 8px var(--error); }
+        /* Top Bar */
+        nav { height: 40px; background: var(--sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 15px; justify-content: space-between; }
+        .indicator { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+        #status-dot { width: 10px; height: 10px; border-radius: 50%; background: #3fb950; transition: 0.3s; }
+        #status-dot.err { background: var(--error); box-shadow: 0 0 10px var(--error); }
 
-        /* Main Workspace */
         .main { display: flex; flex: 1; overflow: hidden; }
 
-        /* Sidebar File Explorer */
-        .sidebar { width: 220px; background: var(--bg-sidebar); border-right: 1px solid var(--border); }
-        .sidebar-header { padding: 12px; font-size: 11px; color: #8b949e; display: flex; justify-content: space-between; font-weight: bold; letter-spacing: 1px; }
-        
-        .file-item { padding: 8px 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; group; transition: 0.2s; }
+        /* Sidebar */
+        .sidebar { width: 220px; background: var(--sidebar); border-right: 1px solid var(--border); }
+        .sidebar-header { padding: 12px; font-size: 11px; color: #8b949e; display: flex; justify-content: space-between; font-weight: bold; }
+        .file-item { padding: 8px 12px; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; }
         .file-item:hover { background: #21262d; }
         .file-item.active { background: #21262d; color: var(--accent); border-left: 2px solid var(--accent); }
-        .delete-btn { color: #484f58; font-size: 14px; opacity: 0; transition: 0.2s; padding: 0 5px; }
-        .file-item:hover .delete-btn { opacity: 1; }
-        .delete-btn:hover { color: var(--error); }
+        .del { color: #484f58; display: none; }
+        .file-item:hover .del { display: inline; }
 
-        /* Editor Section */
+        /* Editor */
         .editor-container { flex: 1; display: flex; flex-direction: column; }
-        .editor-tab { padding: 8px 20px; background: var(--bg-dark); font-size: 12px; border-bottom: 1px solid var(--border); color: var(--accent); }
-        textarea { flex: 1; background: transparent; color: #d4d4d4; border: none; padding: 20px; font-family: 'Fira Code', 'Consolas', monospace; font-size: 14px; outline: none; resize: none; line-height: 1.6; }
+        textarea { flex: 1; background: var(--bg); color: #d4d4d4; border: none; padding: 20px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; resize: none; }
 
-        /* Preview Window */
-        .preview-pane { width: 45%; background: white; border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+        /* Preview Area */
+        .preview-area { width: 45%; background: white; border-left: 1px solid var(--border); display: flex; flex-direction: column; }
         iframe { flex: 1; border: none; }
-        .error-console { height: 100px; background: #111; color: var(--error); font-family: monospace; font-size: 12px; padding: 10px; overflow-y: auto; border-top: 2px solid var(--error); display: none; }
-
-        /* Modal */
-        #modal { display: none; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-sidebar); padding: 20px; border: 1px solid var(--border); border-radius: 8px; z-index: 100; }
-        #modal input { background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 4px; outline: none; }
-        .btn { padding: 8px 15px; border-radius: 4px; cursor: pointer; border: none; font-size: 12px; }
-        .btn-primary { background: var(--accent); color: white; }
+        
+        /* Error Console */
+        #console { height: 130px; background: #010409; color: var(--error); font-family: 'Consolas', monospace; font-size: 12px; padding: 10px; overflow-y: auto; border-top: 2px solid var(--border); display: none; }
+        .err-msg { border-left: 3px solid var(--error); padding-left: 10px; margin-bottom: 8px; white-space: pre-wrap; }
     </style>
 </head>
 <body>
 
     <nav>
-        <div style="font-weight: bold; letter-spacing: 1px;">STUDIO<span style="color:var(--accent)">PRO</span></div>
-        <div class="status-pill">
-            <div id="status-dot" class="indicator"></div>
-            <span id="status-msg">System Healthy</span>
+        <div style="font-weight: bold;">STUDIO<span style="color:var(--accent)">_PRO</span></div>
+        <div class="indicator">
+            <div id="status-dot"></div>
+            <span id="status-text">Ready</span>
         </div>
     </nav>
 
     <div class="main">
         <aside class="sidebar">
-            <div class="sidebar-header">EXPLORER <span onclick="showModal()" style="cursor:pointer; color:var(--accent)">+ New</span></div>
+            <div class="sidebar-header">FILES <span onclick="addFile()" style="cursor:pointer; color:var(--accent)">+ New</span></div>
             <div id="file-list"></div>
         </aside>
 
         <section class="editor-container">
-            <div id="active-tab-title" class="editor-tab">index.html</div>
+            <div id="file-label" style="padding: 5px 15px; font-size: 11px; background: #161b22; color: #8b949e;">index.html</div>
             <textarea id="editor" spellcheck="false"></textarea>
         </section>
 
-        <section class="preview-pane">
+        <section class="preview-area">
             <iframe id="preview"></iframe>
-            <div id="error-logs" class="error-console"></div>
+            <div id="console"></div>
         </section>
-    </div>
-
-    <div id="modal">
-        <input type="text" id="new-filename" placeholder="style.css">
-        <button class="btn btn-primary" onclick="createFile()">Add File</button>
     </div>
 
     <script>
         const editor = document.getElementById('editor');
         const preview = document.getElementById('preview');
         const fileList = document.getElementById('file-list');
-        const errorLogs = document.getElementById('error-logs');
+        const consoleEl = document.getElementById('console');
         const statusDot = document.getElementById('status-dot');
-        const statusMsg = document.getElementById('status-msg');
+        const statusText = document.getElementById('status-text');
 
-        // File System
-        let vfs = JSON.parse(localStorage.getItem('studio_vfs')) || {
-            'index.html': '<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n  <h1>Hello World</h1>\n  <script src="script.js"><\/script>\n</body>\n</html>'
+        let vfs = JSON.parse(localStorage.getItem('vfs_v2')) || {
+            'index.html': '<h1>Click the button</h1>\n<button onclick="test()">Run Code</button>',
+            'script.js': 'function test() {\n  // Try changing this to something broken like: console.x()\n  console.log("Success!");\n}'
         };
         let activeFile = 'index.html';
 
@@ -106,10 +92,7 @@
             Object.keys(vfs).forEach(name => {
                 const div = document.createElement('div');
                 div.className = `file-item ${name === activeFile ? 'active' : ''}`;
-                div.innerHTML = `
-                    <span onclick="switchFile('${name}')">📄 ${name}</span>
-                    ${name !== 'index.html' ? `<span class="delete-btn" onclick="deleteFile('${name}')">×</span>` : ''}
-                `;
+                div.innerHTML = `<span onclick="switchFile('${name}')">📄 ${name}</span> ${name !== 'index.html' ? `<span class="del" onclick="deleteFile('${name}')">×</span>` : ''}`;
                 fileList.appendChild(div);
             });
         }
@@ -117,78 +100,84 @@
         function switchFile(name) {
             vfs[activeFile] = editor.value;
             activeFile = name;
-            document.getElementById('active-tab-title').innerText = name;
+            document.getElementById('file-label').innerText = name;
             editor.value = vfs[name];
             renderSidebar();
             updatePreview();
         }
 
         function deleteFile(name) {
-            if (confirm(`Delete ${name}?`)) {
-                delete vfs[name];
-                if (activeFile === name) activeFile = 'index.html';
-                switchFile(activeFile);
-            }
+            delete vfs[name];
+            if(activeFile === name) activeFile = 'index.html';
+            switchFile(activeFile);
         }
 
-        function showModal() { document.getElementById('modal').style.display = 'block'; document.getElementById('new-filename').focus(); }
-
-        function createFile() {
-            const name = document.getElementById('new-filename').value;
-            if (name && !vfs[name]) {
-                vfs[name] = '';
-                document.getElementById('modal').style.display = 'none';
-                document.getElementById('new-filename').value = '';
-                switchFile(name);
-            }
+        function addFile() {
+            const name = prompt("Filename (e.g. style.css):");
+            if (name && !vfs[name]) { vfs[name] = ''; switchFile(name); }
         }
 
         function updatePreview() {
             vfs[activeFile] = editor.value;
-            localStorage.setItem('studio_vfs', JSON.stringify(vfs));
+            localStorage.setItem('vfs_v2', JSON.stringify(vfs));
             
-            // Clear errors
-            errorLogs.style.display = 'none';
-            errorLogs.innerHTML = '';
-            statusDot.classList.remove('has-error');
-            statusMsg.innerText = "System Healthy";
+            // Reset Error UI
+            consoleEl.style.display = 'none';
+            consoleEl.innerHTML = '';
+            statusDot.classList.remove('err');
+            statusText.innerText = 'Ready';
 
             let html = vfs['index.html'] || '';
-            let styles = '';
-            let scripts = '';
+            let css = '';
+            let js = '';
 
-            Object.keys(vfs).forEach(file => {
-                if (file.endsWith('.css')) styles += `<style>/*${file}*/\n${vfs[file]}</style>`;
-                if (file.endsWith('.js')) scripts += `<script>try {\n${vfs[file]}\n} catch(e) { window.parent.postMessage({error: e.message, file: '${file}'}, '*'); }<\/script>`;
+            Object.keys(vfs).forEach(f => {
+                if(f.endsWith('.css')) css += `<style>${vfs[f]}</style>`;
+                if(f.endsWith('.js')) js += vfs[f] + '\n';
             });
 
-            // The Error Detector Wrapper
-            const errorTracker = `
-                <script>
-                    window.onerror = function(msg, url, line) {
-                        window.parent.postMessage({error: msg, line: line}, '*');
-                    };
-                <\/script>
-            `;
+            // FIXED ERROR DETECTOR: We inject a robust logger and error catcher
+            const scriptWrapper = `
+            <script>
+                // Catch Syntax/Runtime Errors
+                window.onerror = function(msg, url, line, col, error) {
+                    window.parent.postMessage({ type: 'error', msg: msg, line: line }, '*');
+                    return false;
+                };
 
-            const combined = errorTracker + styles + html + scripts;
-            preview.srcdoc = combined;
+                // Catch Console Errors
+                const originalError = console.error;
+                console.error = function(...args) {
+                    window.parent.postMessage({ type: 'error', msg: args.join(' ') }, '*');
+                    originalError.apply(console, args);
+                };
+
+                try {
+                    ${js}
+                } catch(e) {
+                    window.parent.postMessage({ type: 'error', msg: e.message }, '*');
+                }
+            <\/script>`;
+
+            const content = `<!DOCTYPE html><html><head>${css}</head><body>${html}${scriptWrapper}</body></html>`;
+            preview.srcdoc = content;
         }
 
-        // Listen for errors from the iframe
+        // Listen for messages from the Preview Iframe
         window.addEventListener('message', (e) => {
-            if (e.data.error) {
-                errorLogs.style.display = 'block';
-                errorLogs.innerHTML = `<strong>Error:</strong> ${e.data.error}`;
-                statusDot.classList.add('has-error');
-                statusMsg.innerText = "Error Detected";
+            if (e.data.type === 'error') {
+                consoleEl.style.display = 'block';
+                const div = document.createElement('div');
+                div.className = 'err-msg';
+                div.innerText = `Error: ${e.data.msg} ${e.data.line ? '(Line: ' + e.data.line + ')' : ''}`;
+                consoleEl.appendChild(div);
+                
+                statusDot.classList.add('err');
+                statusText.innerText = 'Bugs Detected';
             }
         });
 
         editor.addEventListener('input', updatePreview);
-        window.onclick = (e) => { if(e.target == document.getElementById('modal')) modal.style.display='none'; }
-
-        // Boot IDE
         editor.value = vfs[activeFile];
         renderSidebar();
         updatePreview();
