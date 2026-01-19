@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Studio | Multi-File IDE</title>
+    <title>Studio Pro | IDE</title>
     <style>
         :root {
-            --bg-darker: #090b10;
+            --bg-dark: #0d1117;
             --bg-sidebar: #161b22;
-            --bg-editor: #0d1117;
             --accent: #58a6ff;
             --border: #30363d;
             --text: #c9d1d9;
@@ -16,166 +15,151 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-darker); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg-dark); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Header */
-        header { height: 35px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 15px; font-size: 12px; justify-content: space-between; }
+        /* Navigation */
+        nav { height: 40px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 15px; justify-content: space-between; font-size: 12px; }
+        .logo { color: var(--accent); font-weight: bold; }
 
-        /* Layout */
-        .main-container { display: flex; flex: 1; overflow: hidden; }
+        /* Main Layout */
+        .main { display: flex; flex: 1; overflow: hidden; }
 
         /* Sidebar */
-        .sidebar { width: 220px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sidebar-header { padding: 10px 15px; font-size: 11px; font-weight: bold; color: #8b949e; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
-        .add-file-btn { cursor: pointer; color: var(--accent); font-size: 18px; line-height: 0; }
-        
-        .file-list { flex: 1; overflow-y: auto; }
-        .file-item { padding: 8px 20px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; border-left: 2px solid transparent; }
+        .sidebar { width: 200px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 10px; font-size: 11px; color: #8b949e; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .add-btn { cursor: pointer; color: var(--accent); font-size: 16px; }
+
+        .file-item { padding: 8px 15px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .file-item:hover { background: var(--hover); }
-        .file-item.active { background: #21262d; border-left-color: var(--accent); color: white; }
+        .file-item.active { background: #21262d; border-left: 2px solid var(--accent); color: white; }
 
-        /* Editor Area */
-        .editor-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-editor); }
-        .tabs { height: 35px; background: var(--bg-darker); display: flex; overflow-x: auto; border-bottom: 1px solid var(--border); }
-        .tab { padding: 0 15px; display: flex; align-items: center; font-size: 12px; border-right: 1px solid var(--border); background: var(--bg-sidebar); cursor: pointer; color: #8b949e; }
-        .tab.active { background: var(--bg-editor); color: white; }
+        /* Editor */
+        .editor-box { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
+        .tab-name { padding: 5px 15px; font-size: 12px; background: var(--bg-dark); border-bottom: 1px solid var(--border); color: var(--accent); }
+        textarea { flex: 1; background: transparent; color: #d4d4d4; border: none; padding: 20px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; resize: none; line-height: 1.5; }
 
-        textarea { flex: 1; background: transparent; color: #d4d4d4; border: none; padding: 20px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; resize: none; }
-
-        /* Preview Area */
-        .preview-area { width: 40%; background: white; border-left: 4px solid var(--border); }
-        iframe { width: 100%; height: 100%; border: none; }
-
+        /* Preview */
+        .preview-box { width: 45%; background: white; border-left: 4px solid var(--border); display: flex; flex-direction: column; }
+        iframe { flex: 1; border: none; background: white; }
+        
         /* Modal */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-sidebar); padding: 20px; border: 1px solid var(--border); border-radius: 8px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .modal input { background: var(--bg-darker); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 4px; outline: none; }
+        #modal { display: none; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-sidebar); padding: 20px; border: 1px solid var(--border); border-radius: 8px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #modal input { background: #0d1117; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 4px; outline: none; width: 180px; }
+        #modal button { background: var(--accent); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div>Studio Project Explorer</div>
-        <div id="status">● All Files Synced</div>
-    </header>
+    <nav>
+        <div class="logo">STUDIO_PRO</div>
+        <div id="status">Syncing to LocalStorage...</div>
+    </nav>
 
-    <div class="main-container">
-        <div class="sidebar">
-            <div class="sidebar-header">
-                EXPLORER
-                <span class="add-file-btn" onclick="openModal()" title="New File">+</span>
-            </div>
-            <div id="file-list" class="file-list"></div>
-        </div>
+    <div class="main">
+        <aside class="sidebar">
+            <div class="sidebar-header">EXPLORER <span class="add-btn" onclick="showModal()">+</span></div>
+            <div id="file-list"></div>
+        </aside>
 
-        <div class="editor-area">
-            <div id="tabs" class="tabs"></div>
-            <textarea id="code-editor" spellcheck="false"></textarea>
-        </div>
+        <section class="editor-box">
+            <div id="current-tab" class="tab-name">index.html</div>
+            <textarea id="editor" spellcheck="false"></textarea>
+        </section>
 
-        <div class="preview-area">
-            <iframe id="preview"></iframe>
-        </div>
+        <section class="preview-box">
+            <iframe id="viewer"></iframe>
+        </section>
     </div>
 
-    <div id="modal" class="modal">
-        <p style="margin-bottom: 10px; font-size: 13px;">File Name (e.g. style.css):</p>
-        <input type="text" id="filename-input" placeholder="index.html">
-        <button onclick="addFile()" style="margin-left: 10px; cursor: pointer;">Add</button>
+    <div id="modal">
+        <input type="text" id="new-filename" placeholder="script.js">
+        <button onclick="createFile()">Create</button>
     </div>
 
     <script>
-        // --- VIRTUAL FILE SYSTEM ---
-        let files = {
-            'index.html': '<h1>Home</h1>\n<p>Welcome to the multi-file IDE.</p>\n<button onclick="run()">Test JS</button>',
-            'style.css': 'body { background: #121212; color: white; font-family: sans-serif; padding: 50px; text-align: center; }\nbutton { padding: 10px; background: dodgerblue; border: none; color: white; border-radius: 5px; cursor: pointer; }',
-            'main.js': 'function run() {\n  console.log("Script working!");\n  alert("Logic connected!");\n}'
-        };
-
-        let activeFile = 'index.html';
-
-        const fileListEl = document.getElementById('file-list');
-        const editorEl = document.getElementById('code-editor');
-        const previewEl = document.getElementById('preview');
-        const tabsEl = document.getElementById('tabs');
+        const editor = document.getElementById('editor');
+        const viewer = document.getElementById('viewer');
+        const fileList = document.getElementById('file-list');
+        const tabName = document.getElementById('current-tab');
         const modal = document.getElementById('modal');
 
-        // --- CORE FUNCTIONS ---
+        // Initialize Virtual File System
+        let vfs = JSON.parse(localStorage.getItem('studio_vfs')) || {
+            'index.html': '<!DOCTYPE html>\n<html>\n<head>\n  <title>New Project</title>\n</head>\n<body>\n  <h1>Hello World</h1>\n</body>\n</html>'
+        };
+        let activeFile = 'index.html';
+
+        function saveToStorage() {
+            localStorage.setItem('studio_vfs', JSON.stringify(vfs));
+        }
 
         function renderSidebar() {
-            fileListEl.innerHTML = '';
-            Object.keys(files).forEach(filename => {
+            fileList.innerHTML = '';
+            Object.keys(vfs).forEach(name => {
                 const div = document.createElement('div');
-                div.className = `file-item ${filename === activeFile ? 'active' : ''}`;
-                div.innerHTML = `📄 ${filename}`;
-                div.onclick = () => switchFile(filename);
-                fileListEl.appendChild(div);
+                div.className = `file-item ${name === activeFile ? 'active' : ''}`;
+                div.innerHTML = `📄 ${name}`;
+                div.onclick = () => switchFile(name);
+                fileList.appendChild(div);
             });
         }
 
-        function switchFile(filename) {
-            // Save current work before switching
-            files[activeFile] = editorEl.value;
-            
-            activeFile = filename;
-            editorEl.value = files[activeFile];
+        function switchFile(name) {
+            vfs[activeFile] = editor.value; // Save current typing
+            activeFile = name;
+            tabName.innerText = name;
+            editor.value = vfs[name];
             renderSidebar();
             updatePreview();
         }
 
-        function openModal() { modal.style.display = 'block'; document.getElementById('filename-input').focus(); }
+        function showModal() { modal.style.display = 'block'; document.getElementById('new-filename').focus(); }
 
-        function addFile() {
-            const input = document.getElementById('filename-input');
-            if (input.value && !files[input.value]) {
-                files[input.value] = '';
-                switchFile(input.value);
-                input.value = '';
+        function createFile() {
+            const name = document.getElementById('new-filename').value;
+            if (name && !vfs[name]) {
+                vfs[name] = '';
                 modal.style.display = 'none';
+                document.getElementById('new-filename').value = '';
+                switchFile(name);
             }
         }
 
         function updatePreview() {
-            // Save current typing state
-            files[activeFile] = editorEl.value;
+            vfs[activeFile] = editor.value;
+            saveToStorage();
 
-            // Compilation Logic:
-            // 1. Get HTML from index.html
-            // 2. Wrap all .css files in <style>
-            // 3. Wrap all .js files in <script>
-            
-            let html = files['index.html'] || '';
-            let css = '';
-            let js = '';
+            let doc = vfs['index.html'] || '';
+            let cssBundle = '';
+            let jsBundle = '';
 
-            Object.keys(files).forEach(name => {
-                if (name.endsWith('.css')) css += `<style>/* ${name} */\n${files[name]}</style>\n`;
-                if (name.endsWith('.js')) js += `<script>\n${files[name]}<\/script>\n`;
+            // Bundle all CSS and JS files into the preview
+            Object.keys(vfs).forEach(name => {
+                if (name.endsWith('.css')) cssBundle += `\n/* ${name} */\n${vfs[name]}`;
+                if (name.endsWith('.js')) jsBundle += `\n// ${name}\n${vfs[name]}`;
             });
 
-            const combined = `
-                <!DOCTYPE html>
-                <html>
-                <head>${css}</head>
-                <body>
-                    ${html}
-                    ${js}
-                </body>
-                </html>
-            `;
-            
-            previewEl.srcdoc = combined;
+            // Inject styles before </head> and scripts before </body>
+            let rendered = doc;
+            if (cssBundle) rendered = rendered.replace('</head>', `<style>${cssBundle}</style></head>`);
+            if (jsBundle) rendered = rendered.replace('</body>', `<script>${jsBundle}<\/script></body>`);
+
+            // Fallback if tags are missing
+            if (!rendered.includes('<style>') && cssBundle) rendered += `<style>${cssBundle}</style>`;
+            if (!rendered.includes('<script>') && jsBundle) rendered += `<script>${jsBundle}<\/script>`;
+
+            viewer.srcdoc = rendered;
         }
 
-        // --- INITIALIZATION ---
-        editorEl.value = files[activeFile];
-        editorEl.addEventListener('input', updatePreview);
+        editor.addEventListener('input', updatePreview);
+        
+        // Initial setup
+        editor.value = vfs[activeFile];
         renderSidebar();
         updatePreview();
 
-        // Close modal on Enter
-        document.getElementById('filename-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addFile();
-        });
+        // Close modal on click outside
+        window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; }
     </script>
 </body>
 </html>
