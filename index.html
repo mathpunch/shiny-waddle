@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Pro | Master Edition</title>
+    <title>Studio Pro | Ultimate</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-app: #0d1117;       /* Darkest Github bg */
-            --bg-panel: #161b22;     /* Panel bg */
-            --bg-active: #21262d;    /* Active item bg */
-            --border: #30363d;       /* Border color */
-            --accent: #58a6ff;       /* Blue accent */
-            --text-main: #c9d1d9;    /* Main text */
-            --text-dim: #8b949e;     /* Dimmed text */
-            --error: #f85149;        /* Red error */
-            --success: #3fb950;      /* Green success */
-            --warn: #d29922;         /* Yellow warning */
+            /* Theme Colors */
+            --bg-app: #0d1117;
+            --bg-panel: #161b22;
+            --bg-active: #21262d;
+            --border: #30363d;
+            --accent: #58a6ff;
+            --text-main: #c9d1d9;
+            --text-dim: #8b949e;
+            --error: #f85149;
+            --success: #3fb950;
             --font-ui: 'Inter', sans-serif;
             --font-code: 'JetBrains Mono', monospace;
         }
@@ -38,7 +38,7 @@
             overflow: hidden;
         }
 
-        /* --- HEADER --- */
+        /* --- Header --- */
         header {
             height: 50px;
             background: var(--bg-panel);
@@ -48,7 +48,6 @@
             justify-content: space-between;
             padding: 0 20px;
             z-index: 10;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
         .brand {
@@ -58,17 +57,18 @@
             align-items: center;
             gap: 10px;
             letter-spacing: -0.5px;
+            color: #fff;
         }
 
         .brand i { color: var(--accent); }
 
-        .controls { display: flex; gap: 10px; }
+        .controls { display: flex; gap: 8px; }
 
         .btn {
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
@@ -83,14 +83,14 @@
         .btn-primary { background: var(--accent); color: #000; border: none; }
         .btn-primary:hover { background: #79c0ff; }
 
-        /* --- LAYOUT --- */
+        /* --- Main Layout --- */
         .workspace {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        /* SIDEBAR */
+        /* Sidebar */
         .sidebar {
             width: 250px;
             background: var(--bg-panel);
@@ -107,7 +107,6 @@
             letter-spacing: 1px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
 
         .file-list { flex: 1; overflow-y: auto; }
@@ -119,26 +118,23 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: background 0.1s;
             border-left: 2px solid transparent;
+            transition: background 0.1s;
         }
 
         .file-item:hover { background: var(--bg-active); }
         .file-item.active { background: var(--bg-active); border-left-color: var(--accent); color: white; }
         
-        .file-name { display: flex; align-items: center; gap: 8px; }
-        .file-actions { opacity: 0; transition: opacity 0.2s; }
-        .file-item:hover .file-actions { opacity: 1; }
-        .delete-icon { color: var(--text-dim); padding: 2px 6px; border-radius: 4px; }
+        .delete-icon { opacity: 0; font-size: 12px; transition: 0.2s; padding: 4px; border-radius: 4px; }
+        .file-item:hover .delete-icon { opacity: 1; }
         .delete-icon:hover { color: var(--error); background: rgba(248,81,73,0.1); }
 
-        /* EDITOR */
+        /* Editor */
         .editor-pane {
             flex: 1;
             display: flex;
             flex-direction: column;
             background: var(--bg-app);
-            position: relative;
         }
 
         .tab-strip {
@@ -155,7 +151,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-main);
             background: var(--bg-panel);
             border-right: 1px solid var(--border);
@@ -165,6 +161,7 @@
         .tab.active {
             background: var(--bg-app);
             border-top-color: var(--accent);
+            color: white;
         }
 
         textarea {
@@ -182,7 +179,7 @@
             white-space: pre;
         }
 
-        /* PREVIEW */
+        /* Preview */
         .preview-pane {
             width: 40%;
             display: flex;
@@ -193,10 +190,9 @@
 
         iframe { flex: 1; width: 100%; height: 100%; border: none; }
 
-        /* TERMINAL / CONSOLE */
+        /* Console */
         .console-panel {
-            height: 0; /* Hidden by default, expands on error/click */
-            min-height: 30px;
+            height: 32px; /* Collapsed height */
             background: var(--bg-panel);
             border-top: 1px solid var(--border);
             display: flex;
@@ -208,7 +204,7 @@
 
         .console-header {
             padding: 0 15px;
-            height: 30px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -219,7 +215,7 @@
             color: var(--text-dim);
             user-select: none;
         }
-
+        
         .console-header:hover { color: var(--text-main); }
 
         .console-body {
@@ -231,18 +227,18 @@
             color: var(--text-main);
         }
 
-        .log-entry { margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid #30363d; display: flex; gap: 10px; }
-        .log-time { color: #58a6ff; min-width: 60px; }
+        .log-entry { margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #30363d; display: flex; gap: 10px; }
+        .log-time { color: var(--accent); opacity: 0.7; min-width: 60px; }
         .log-msg { white-space: pre-wrap; word-break: break-all; }
-        .log-error { color: var(--error); }
-        .log-warn { color: var(--warn); }
+        .log-err { color: var(--error); }
+        .log-warn { color: #d29922; }
 
-        /* MODAL */
+        /* Modal */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
             backdrop-filter: blur(2px);
-            z-index: 999;
+            z-index: 100;
             display: none;
             justify-content: center;
             align-items: center;
@@ -255,45 +251,33 @@
             border-radius: 8px;
             width: 320px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: slideUp 0.2s ease-out;
         }
 
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .modal h3 { font-size: 14px; margin-bottom: 15px; }
-        .modal input { width: 100%; padding: 8px; margin-bottom: 15px; background: var(--bg-app); border: 1px solid var(--border); color: white; border-radius: 4px; outline: none; }
+        .modal input { width: 100%; padding: 10px; margin-bottom: 15px; background: var(--bg-app); border: 1px solid var(--border); color: white; border-radius: 4px; outline: none; }
         .modal input:focus { border-color: var(--accent); }
-
-        /* SCROLLBARS */
-        ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-app); }
-        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: #484f58; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="brand">
-            <i class="fa-solid fa-code"></i>
-            STUDIO PRO
+            <i class="fa-solid fa-code"></i> STUDIO PRO
         </div>
         <div class="controls">
+            <button class="btn" onclick="openFullView()" title="Open in new tab"><i class="fa-solid fa-external-link-alt"></i> Full View</button>
             <button class="btn" onclick="openNewFileModal()"><i class="fa-solid fa-plus"></i> New File</button>
-            <button class="btn" onclick="downloadProject()"><i class="fa-solid fa-download"></i> Export ZIP</button>
+            <button class="btn" onclick="downloadProject()"><i class="fa-solid fa-download"></i> Download ZIP</button>
             <button class="btn" onclick="resetProject()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
         </div>
     </header>
 
     <div class="workspace">
-        
         <div class="sidebar">
             <div class="sidebar-header">
                 EXPLORER
                 <span id="file-count" style="background: var(--bg-active); padding: 2px 6px; border-radius: 10px;">1</span>
             </div>
-            <div id="file-list" class="file-list">
-                </div>
+            <div id="file-list" class="file-list"></div>
         </div>
 
         <div class="editor-pane">
@@ -303,7 +287,7 @@
                     <span id="tab-name">index.html</span>
                 </div>
             </div>
-            <textarea id="code-editor" spellcheck="false" placeholder="Start coding here..."></textarea>
+            <textarea id="code-editor" spellcheck="false" placeholder="// Start coding..."></textarea>
         </div>
 
         <div class="preview-pane">
@@ -311,13 +295,13 @@
             
             <div class="console-panel" id="console-panel">
                 <div class="console-header" onclick="toggleConsole()">
-                    <span><i class="fa-solid fa-terminal"></i> CONSOLE / ERRORS</span>
-                    <span id="status-indicator" style="display:flex; align-items:center; gap:5px; font-weight:normal;">
-                        <span style="width:8px; height:8px; background:var(--success); border-radius:50%; display:inline-block;"></span> Ready
+                    <span><i class="fa-solid fa-terminal"></i> TERMINAL / LOGS</span>
+                    <span id="status-ind" style="display:flex; align-items:center; gap:5px; font-weight:normal;">
+                        <span style="width:8px; height:8px; background:var(--success); border-radius:50%;"></span> Ready
                     </span>
                 </div>
-                <div class="console-body" id="console-logs">
-                    <div style="color: #8b949e; font-style: italic;">Application logs will appear here...</div>
+                <div id="console-logs" class="console-body">
+                    <div style="color: #555; font-style: italic;">Console output will appear here...</div>
                 </div>
             </div>
         </div>
@@ -325,8 +309,8 @@
 
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal">
-            <h3>Create New File</h3>
-            <input type="text" id="filename-input" placeholder="e.g. style.css or script.js">
+            <h3 style="margin-bottom: 10px; color: var(--text-main); font-size: 14px;">Create New File</h3>
+            <input type="text" id="filename-input" placeholder="style.css, script.js, or about.html">
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-primary" style="flex:1" onclick="createFile()">Create</button>
                 <button class="btn" style="flex:1" onclick="closeModal()">Cancel</button>
@@ -335,301 +319,223 @@
     </div>
 
     <script>
-        // --- 1. STATE MANAGEMENT ---
+        // --- 1. CONFIGURATION & STATE ---
         const DEFAULT_PROJECT = {
             'index.html': `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My Project</title>
+  <meta charset="UTF-8">
+  <title>My App</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Hello World</h1>
-        <p>Edit index.html to start building.</p>
-        <button onclick="test()">Click Me</button>
-    </div>
+  <div class="container">
+    <h1>Welcome to Studio Pro</h1>
+    <p>Click "Full View" to see this in a new tab!</p>
+    <button onclick="hello()">Test Console</button>
+  </div>
 </body>
 </html>`,
+            'style.css': `body { font-family: sans-serif; text-align: center; padding: 50px; background: #f0f0f0; }
+.container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+button:hover { background: #0056b3; }`,
+            'script.js': `function hello() {
+  console.log("Hello from the Virtual Console!");
+  alert("It works!");
+}`
         };
 
-        let vfs = JSON.parse(localStorage.getItem('studio_vfs_final')) || JSON.parse(JSON.stringify(DEFAULT_PROJECT));
+        // Load from LocalStorage or use Default
+        let vfs = JSON.parse(localStorage.getItem('studio_pro_v5')) || JSON.parse(JSON.stringify(DEFAULT_PROJECT));
         let activeFile = 'index.html';
 
-        // --- 2. DOM ELEMENTS ---
+        // Elements
         const editor = document.getElementById('code-editor');
         const fileList = document.getElementById('file-list');
         const previewFrame = document.getElementById('preview-frame');
         const consoleLogs = document.getElementById('console-logs');
-        const consolePanel = document.getElementById('console-panel');
-        const statusInd = document.getElementById('status-indicator');
-        const tabName = document.getElementById('tab-name');
-        const tabIcon = document.getElementById('tab-icon');
-        const fileCount = document.getElementById('file-count');
+        const statusInd = document.getElementById('status-ind');
+        const modal = document.getElementById('modal-overlay');
 
-        // --- 3. FILE SYSTEM LOGIC ---
+        // --- 2. COMPILER ENGINE ---
+        // Combines all files into one string for Iframe or Full View
+        function compileProject() {
+            let html = vfs['index.html'] || "<h1>No index.html found</h1>";
+            let cssBundle = "";
+            let jsBundle = "";
 
-        function saveState() {
-            localStorage.setItem('studio_vfs_final', JSON.stringify(vfs));
+            // Gather Assets
+            Object.keys(vfs).forEach(name => {
+                if (name.endsWith('.css')) cssBundle += `\n/* ${name} */\n${vfs[name]}`;
+                if (name.endsWith('.js')) jsBundle += `\n// ${name}\n${vfs[name]}`;
+            });
+
+            // Proxy Script: Intercepts console and errors to send back to Studio
+            const proxyScript = `
+            <script>
+                (function() {
+                    function send(type, msg) {
+                        const payload = { source: 'studio-pro', type: type, message: msg };
+                        if (window.opener) window.opener.postMessage(payload, '*'); // If in new tab
+                        else window.parent.postMessage(payload, '*'); // If in iframe
+                    }
+
+                    // Catch Errors
+                    window.onerror = function(msg, url, line) {
+                        send('error', msg + " (Line: " + line + ")");
+                        return false;
+                    };
+
+                    // Intercept Console
+                    const _log = console.log;
+                    const _warn = console.warn;
+                    const _error = console.error;
+
+                    console.log = function(...args) { send('log', args.join(' ')); _log.apply(console, args); };
+                    console.warn = function(...args) { send('warn', args.join(' ')); _warn.apply(console, args); };
+                    console.error = function(...args) { send('error', args.join(' ')); _error.apply(console, args); };
+                })();
+            <\/script>`;
+
+            // Inject Logic
+            let doc = html;
+            
+            // Add CSS
+            if (doc.includes('</head>')) doc = doc.replace('</head>', `<style>${cssBundle}</style></head>`);
+            else doc = `<style>${cssBundle}</style>` + doc;
+
+            // Add Proxy (First in body)
+            if (doc.includes('<body>')) doc = doc.replace('<body>', `<body>${proxyScript}`);
+            else doc = proxyScript + doc;
+
+            // Add JS (Last in body, wrapped in Try/Catch)
+            const safeJs = `<script>try { ${jsBundle} } catch(e) { console.error(e.message); }<\/script>`;
+            if (doc.includes('</body>')) doc = doc.replace('</body>', `${safeJs}</body>`);
+            else doc += safeJs;
+
+            return doc;
         }
 
-        function getIconClass(filename) {
-            if (filename.endsWith('.html')) return 'fa-brands fa-html5';
-            if (filename.endsWith('.css')) return 'fa-brands fa-css3-alt';
-            if (filename.endsWith('.js')) return 'fa-brands fa-js';
-            return 'fa-solid fa-file';
+        // --- 3. CORE FUNCTIONS ---
+
+        function updatePreview() {
+            // Save state
+            vfs[activeFile] = editor.value;
+            localStorage.setItem('studio_pro_v5', JSON.stringify(vfs));
+            
+            // Render
+            previewFrame.srcdoc = compileProject();
+            
+            // Reset status (unless error comes in immediately)
+            statusInd.innerHTML = `<span style="width:8px; height:8px; background:var(--success); border-radius:50%;"></span> Ready`;
         }
 
-        function getIconColor(filename) {
-            if (filename.endsWith('.html')) return '#e34c26';
-            if (filename.endsWith('.css')) return '#563d7c';
-            if (filename.endsWith('.js')) return '#f1e05a';
-            return '#8b949e';
+        function openFullView() {
+            vfs[activeFile] = editor.value; // Ensure saved
+            const finalCode = compileProject();
+            
+            const win = window.open('', '_blank');
+            if (win) {
+                win.document.open();
+                win.document.write(finalCode);
+                win.document.close();
+            } else {
+                alert("Popup blocked! Please allow popups for this site to use Full View.");
+            }
         }
 
         function renderSidebar() {
             fileList.innerHTML = '';
-            const files = Object.keys(vfs);
-            fileCount.innerText = files.length;
+            document.getElementById('file-count').innerText = Object.keys(vfs).length;
 
-            files.forEach(name => {
+            Object.keys(vfs).forEach(name => {
                 const item = document.createElement('div');
                 item.className = `file-item ${name === activeFile ? 'active' : ''}`;
                 
-                const iconClass = getIconClass(name);
-                const iconColor = getIconColor(name);
+                const icon = getFileIcon(name);
+                const color = getFileColor(name);
 
                 item.innerHTML = `
-                    <div class="file-name">
-                        <i class="${iconClass}" style="color: ${name === activeFile ? 'white' : iconColor}"></i>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <i class="${icon}" style="color: ${name === activeFile ? '#fff' : color}"></i>
                         ${name}
                     </div>
-                    ${name !== 'index.html' ? `<div class="file-actions"><i class="fa-solid fa-trash delete-icon" onclick="deleteFile('${name}', event)"></i></div>` : ''}
+                    ${name !== 'index.html' ? `<i class="fa-solid fa-trash delete-icon" onclick="deleteFile('${name}', event)"></i>` : ''}
                 `;
+                
                 item.onclick = (e) => {
-                    // Prevent switching if delete button clicked
-                    if (!e.target.classList.contains('delete-icon')) {
-                        switchFile(name);
-                    }
+                    if (!e.target.classList.contains('delete-icon')) switchFile(name);
                 };
+                
                 fileList.appendChild(item);
             });
         }
 
         function switchFile(name) {
-            // Save current file before switching
-            vfs[activeFile] = editor.value;
-            saveState();
-
+            vfs[activeFile] = editor.value; // Save current
             activeFile = name;
             editor.value = vfs[name];
             
-            // Update Tab
-            tabName.innerText = name;
-            tabIcon.className = getIconClass(name);
-            tabIcon.style.color = getIconColor(name);
+            // Update Tab Info
+            document.getElementById('tab-name').innerText = name;
+            const icon = document.getElementById('tab-icon');
+            icon.className = getFileIcon(name);
+            icon.style.color = getFileColor(name);
 
             renderSidebar();
-            
-            // If switching to JS/HTML/CSS, we update preview to reflect changes
             updatePreview();
         }
 
-        function createFile() {
-            const input = document.getElementById('filename-input');
-            const name = input.value.trim();
-            
-            if (!name) return alert("Filename cannot be empty.");
-            if (vfs[name]) return alert("File already exists.");
+        // --- 4. UTILS & HELPERS ---
 
-            vfs[name] = ""; // Init empty file
-            closeModal();
-            input.value = "";
-            switchFile(name);
+        function getFileIcon(name) {
+            if (name.endsWith('.html')) return 'fa-brands fa-html5';
+            if (name.endsWith('.css')) return 'fa-brands fa-css3-alt';
+            if (name.endsWith('.js')) return 'fa-brands fa-js';
+            return 'fa-solid fa-file';
         }
 
-        function deleteFile(name, event) {
-            event.stopPropagation(); // Stop click from triggering file switch
-            if (confirm(`Are you sure you want to delete ${name}?`)) {
+        function getFileColor(name) {
+            if (name.endsWith('.html')) return '#e34c26';
+            if (name.endsWith('.css')) return '#563d7c';
+            if (name.endsWith('.js')) return '#f1e05a';
+            return '#8b949e';
+        }
+
+        function deleteFile(name, e) {
+            e.stopPropagation();
+            if (confirm(`Permanently delete ${name}?`)) {
                 delete vfs[name];
-                if (activeFile === name) {
-                    switchFile('index.html');
-                } else {
-                    saveState();
+                if (activeFile === name) switchFile('index.html');
+                else {
+                    localStorage.setItem('studio_pro_v5', JSON.stringify(vfs));
                     renderSidebar();
                     updatePreview();
                 }
             }
         }
 
+        function createFile() {
+            const name = document.getElementById('filename-input').value.trim();
+            if (name && !vfs[name]) {
+                vfs[name] = "";
+                closeModal();
+                switchFile(name);
+            } else if (vfs[name]) {
+                alert("File already exists!");
+            }
+        }
+
         function resetProject() {
-            if (confirm("This will delete all files and reset to default. Continue?")) {
+            if (confirm("Reset to default project? All changes will be lost.")) {
                 vfs = JSON.parse(JSON.stringify(DEFAULT_PROJECT));
-                activeFile = 'index.html';
                 switchFile('index.html');
             }
         }
 
-        // --- 4. PREVIEW COMPILER & ERROR HANDLING ---
-
-        function updatePreview() {
-            // 1. Save current editor content to VFS
-            vfs[activeFile] = editor.value;
-            saveState();
-
-            // 2. Prepare Bundles
-            let htmlContent = vfs['index.html'] || "<h1>No index.html found</h1>";
-            let cssBundle = "";
-            let jsBundle = "";
-
-            Object.keys(vfs).forEach(filename => {
-                if (filename.endsWith('.css')) {
-                    cssBundle += `\n/* ${filename} */\n${vfs[filename]}`;
-                }
-                if (filename.endsWith('.js')) {
-                    jsBundle += `\n// ${filename}\n${vfs[filename]}`;
-                }
-            });
-
-            // 3. Construct the Error & Log Proxy Script
-            // This script intercepts console calls and errors inside the iframe
-            // and sends them to the parent window via postMessage
-            const proxyScript = `
-                <script>
-                    (function() {
-                        function send(type, msg, source) {
-                            window.parent.postMessage({
-                                source: 'studio-pro',
-                                type: type,
-                                message: msg
-                            }, '*');
-                        }
-
-                        // Catch Syntax/Runtime Errors
-                        window.onerror = function(msg, url, line, col, error) {
-                            send('error', msg + " (Line: " + line + ")");
-                            return false;
-                        };
-
-                        // Catch Unhandled Promise Rejections
-                        window.onunhandledrejection = function(e) {
-                            send('error', "Unhandled Promise: " + e.reason);
-                        };
-
-                        // Hijack Console
-                        const oldLog = console.log;
-                        const oldWarn = console.warn;
-                        const oldError = console.error;
-
-                        console.log = function(...args) { send('log', args.join(' ')); oldLog.apply(console, args); };
-                        console.warn = function(...args) { send('warn', args.join(' ')); oldWarn.apply(console, args); };
-                        console.error = function(...args) { send('error', args.join(' ')); oldError.apply(console, args); };
-                    })();
-                <\/script>
-            `;
-
-            // 4. Inject Content
-            // We use simple string replacement to inject CSS into head and JS into body
-            let finalDoc = htmlContent;
-
-            // Inject CSS
-            if (finalDoc.includes('</head>')) {
-                finalDoc = finalDoc.replace('</head>', `<style>${cssBundle}</style></head>`);
-            } else {
-                finalDoc += `<style>${cssBundle}</style>`;
-            }
-
-            // Inject Proxy Script (First thing in body or at top)
-            if (finalDoc.includes('<body>')) {
-                finalDoc = finalDoc.replace('<body>', `<body>${proxyScript}`);
-            } else {
-                finalDoc = proxyScript + finalDoc;
-            }
-
-            // Inject User JS (Last thing in body)
-            // We wrap user JS in a try-catch block for extra safety on immediate execution errors
-            const safeJs = `
-                <script>
-                    try {
-                        ${jsBundle}
-                    } catch (e) {
-                        console.error(e.message);
-                    }
-                <\/script>
-            `;
-
-            if (finalDoc.includes('</body>')) {
-                finalDoc = finalDoc.replace('</body>', `${safeJs}</body>`);
-            } else {
-                finalDoc += safeJs;
-            }
-
-            // 5. Render
-            previewFrame.srcdoc = finalDoc;
-            
-            // Clear status (will update if error comes in)
-            statusInd.innerHTML = `<span style="width:8px; height:8px; background:var(--success); border-radius:50%;"></span> Ready`;
-        }
-
-        // --- 5. PARENT WINDOW LISTENER (LOGS) ---
-        window.addEventListener('message', (event) => {
-            const data = event.data;
-            if (data && data.source === 'studio-pro') {
-                logToConsole(data.type, data.message);
-            }
-        });
-
-        function logToConsole(type, msg) {
-            // If it's the first log, clear the "placeholder" text
-            if (consoleLogs.innerHTML.includes('Application logs will appear here')) {
-                consoleLogs.innerHTML = '';
-            }
-
-            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-            const div = document.createElement('div');
-            div.className = 'log-entry';
-            
-            // Styling based on type
-            let colorClass = 'log-msg';
-            if (type === 'error') colorClass += ' log-error';
-            if (type === 'warn') colorClass += ' log-warn';
-
-            div.innerHTML = `
-                <div class="log-time">[${time}]</div>
-                <div class="${colorClass}">${msg}</div>
-            `;
-            
-            consoleLogs.appendChild(div);
-            consoleLogs.scrollTop = consoleLogs.scrollHeight; // Auto-scroll
-
-            // If Error, Auto-open console and update status
-            if (type === 'error') {
-                statusInd.innerHTML = `<span style="width:8px; height:8px; background:var(--error); border-radius:50%;"></span> Error`;
-                consolePanel.classList.add('open');
-            }
-        }
-
-        function toggleConsole() {
-            consolePanel.classList.toggle('open');
-        }
-
-        // --- 6. EXPORT / MODAL UTILS ---
-
-        function openNewFileModal() {
-            document.getElementById('modal-overlay').style.display = 'flex';
-            document.getElementById('filename-input').focus();
-        }
-
-        function closeModal() {
-            document.getElementById('modal-overlay').style.display = 'none';
-        }
-
         async function downloadProject() {
             const zip = new JSZip();
-            Object.keys(vfs).forEach(filename => {
-                zip.file(filename, vfs[filename]);
-            });
-            
+            Object.keys(vfs).forEach(name => zip.file(name, vfs[name]));
             const content = await zip.generateAsync({type:"blob"});
             const link = document.createElement('a');
             link.href = URL.createObjectURL(content);
@@ -637,26 +543,50 @@
             link.click();
         }
 
-        // --- 7. INITIALIZATION ---
+        // --- 5. LOGGING SYSTEM (PostMessage) ---
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (data && data.source === 'studio-pro') {
+                // Clear placeholder if present
+                if (consoleLogs.innerHTML.includes('Console output')) consoleLogs.innerHTML = '';
+
+                const div = document.createElement('div');
+                div.className = 'log-entry';
+                
+                let typeClass = 'log-msg';
+                if (data.type === 'error') typeClass += ' log-err';
+                if (data.type === 'warn') typeClass += ' log-warn';
+
+                div.innerHTML = `
+                    <div class="log-time">[${new Date().toLocaleTimeString('en-US',{hour12:false})}]</div>
+                    <div class="${typeClass}">${data.message}</div>
+                `;
+                consoleLogs.appendChild(div);
+                consoleLogs.scrollTop = consoleLogs.scrollHeight;
+
+                if (data.type === 'error') {
+                    document.getElementById('console-panel').classList.add('open');
+                    statusInd.innerHTML = `<span style="width:8px; height:8px; background:var(--error); border-radius:50%;"></span> Error`;
+                }
+            }
+        });
+
+        // --- 6. EVENT LISTENERS ---
+        function toggleConsole() { document.getElementById('console-panel').classList.toggle('open'); }
+        function openNewFileModal() { modal.style.display = 'flex'; document.getElementById('filename-input').focus(); }
+        function closeModal() { modal.style.display = 'none'; document.getElementById('filename-input').value = ''; }
         
-        // Listen for typing
+        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+        document.getElementById('filename-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') createFile(); });
+
+        // Auto-update delay
+        let timeout;
         editor.addEventListener('input', () => {
-            // Debounce preview updates slightly for performance
-            clearTimeout(window.updateTimer);
-            window.updateTimer = setTimeout(updatePreview, 500);
+            clearTimeout(timeout);
+            timeout = setTimeout(updatePreview, 500);
         });
 
-        // Close modal on outside click
-        document.getElementById('modal-overlay').addEventListener('click', (e) => {
-            if (e.target.id === 'modal-overlay') closeModal();
-        });
-        
-        // Close modal on Enter key
-        document.getElementById('filename-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') createFile();
-        });
-
-        // Start
+        // Initialize
         editor.value = vfs[activeFile];
         renderSidebar();
         updatePreview();
